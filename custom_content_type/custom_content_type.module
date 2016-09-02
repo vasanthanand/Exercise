@@ -1,0 +1,76 @@
+<?php
+/**
+ * @file
+ * This module provides a node type called 'Simple Content Type'
+ */
+// make sure you have this or the options function won't fire
+require_once('custom_content_type_functions.inc');
+
+/**
+ * Implements hook_help().
+ */
+
+function custom_content_type_help($path, $args){
+	$output = '';
+	switch ($path) {
+		case 'admin/help#Customexercise':
+			$output = '<p>' . t("This module will help in doing content type overrides") . '</p>';
+			break;
+	}
+	return $output;
+}
+
+/**
+ * Implements hook_view_view().
+ */
+
+function custom_content_type_preprocess_views_view(&$vars){
+	$view = &$vars['view'];
+	// Make sure it's the correct view
+	if ($view->name == 'custom-tipped') {
+	// add needed javascript
+	drupal_add_js(drupal_get_path('module', 'custom_content_type') . '/scripts/tipped.js');
+	drupal_add_js(drupal_get_path('module', 'custom_content_type') . '/scripts/cutom_tipped.js');
+	// add needed stylesheet
+	drupal_add_css(drupal_get_path('module', 'custom_content_type') . '/css/tipped.css');
+	}
+}
+
+/**
+ * Implements hook_node_info().
+ */
+function custom_content_type_node_info() {
+  
+  $items['custom_content_type'] = array(
+    'name' => t('Custom Content Type'),
+    'type' => 'custom_content_type',
+    'base' => 'node_content',
+    'description' => t('A custom demonstration content type demonstarting the Form API select widget.'),
+    'title_label' => t('Title'),
+    'help' => t('Please fill in all fields.'),
+  );
+  
+  return $items;
+}
+/**
+ * Implement hook_form() with the standard default form.
+ */
+function custom_content_type_form($node, $form_state) {
+  return node_content_form($node, $form_state);
+}
+
+/**
+ * Implement hook_form_alter() with the standard default form.
+ */
+
+function custom_content_type_form_alter(&$form, &$form_state, $form_id) {
+  global $user;
+  if($form_id=='custom_content_type_node_form'){
+	if (in_array('editor', $user->roles)) {
+     $form['custom_content_type_select']['und']['#options'] = array('_none'=>'- Select a value -', 1 => 'Apple', 2 => 'Banana' );
+	}else if(in_array('administrator', $user->roles)){
+		$form['custom_content_type_select']['und']['#options'] = array('_none'=>'- Select a value -', 1 => 'Cat', 2 => 'Dog' );
+	}
+  }
+
+}

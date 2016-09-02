@@ -1,0 +1,6 @@
+name = Custom Content Type
+description = A custom demonstration content type
+package = Custom
+core = 7.x
+files[] = custom_content_type.install
+files[] = custom_content_type.module
